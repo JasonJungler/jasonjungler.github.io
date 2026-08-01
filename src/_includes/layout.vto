@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{{ description ?? site.description }}">
+    <meta name="theme-color" content="#f5efe6">
+    <title>{{ title }} · {{ site.shortName }}</title>
+    <link rel="canonical" href="{{ site.url }}{{ url }}">
+    <meta property="og:title" content="{{ title }} · {{ site.shortName }}">
+    <meta property="og:description" content="{{ description ?? site.description }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site.url }}{{ url }}">
+    <link rel="alternate" type="application/rss+xml" title="Jason Chang — Writing" href="/blog/feed.xml">
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    {{ include "header.vto" }}
+    <main id="main-content">{{ content }}</main>
+    <script>
+      (() => {
+        const shell = document.querySelector('.timeline-shell');
+        if (!shell) return;
+
+        const cards = Array.from(shell.querySelectorAll('.timeline-card'));
+        const tracks = Array.from(shell.querySelectorAll('.timeline-track'));
+        const anchors = Array.from(shell.querySelectorAll('.timeline-anchor'));
+        const graph = shell.querySelector('.timeline-graph');
+        const cardsColumn = shell.querySelector('.timeline-cards');
+        const msPerYear = 365.2425 * 24 * 60 * 60 * 1000;
+        const referenceDate = new Date();
+
+        const parseDate = value => {
+          if (!value || value === 'present') return referenceDate;
+          const [year, month, day] = value.split('-').map(Number);
+          return new Date(year, month - 1, day);
+        };
+
+        const layoutTimeline = () => {
+          if (!graph || !cardsColumn) return;
+
+          const totalHeight = Math.max(cardsColumn.getBoundingClientRect().height, 1);
+          const startDates = tracks.map(track => parseDate(track.dataset.startDate));
+          const oldestDate = new Date(Math.min(...startDates.map(date => date.getTime())));
+          const rangeMs = Math.max(referenceDate.getTime() - oldestDate.getTime(), msPerYear);
+          const toY = date => ((referenceDate.getTime() - date.getTime()) / rangeMs) * totalHeight;
+
+          graph.style.height = `${totalHeight}px`;
+          cardsColumn.style.minHeight = `${totalHeight}px`;
+
+          anchors.forEach(anchor => {
+            const year = Number(anchor.style.getPropertyValue('--year'));
+            const y = toY(new Date(year, 0, 1));
+            anchor.style.top = `${Math.max(0, Math.min(totalHeight, y))}px`;
+          });
+
+          tracks.forEach(track => {
+            const startDate = parseDate(track.dataset.startDate);
+            const endDate = parseDate(track.dataset.endDate);
+            const yStart = toY(startDate);
+            const yEnd = toY(endDate);
+            const top = Math.min(yStart, yEnd);
+            const bottom = Math.max(yStart, yEnd);
+            const height = Math.max(bottom - top, 1);
+            const startDot = track.querySelector('.timeline-track-dot--start');
+            const endDot = track.querySelector('.timeline-track-dot--end');
+
+            track.style.top = `${Math.max(0, Math.min(totalHeight, top))}px`;
+            track.style.height = `${height}px`;
+            if (startDot) startDot.style.top = `${yStart - top}px`;
+            if (endDot) endDot.style.top = `${yEnd - top}px`;
+          });
+        };
+
+        const scheduleLayout = () => requestAnimationFrame(layoutTimeline);
+        scheduleLayout();
+
+        if ('ResizeObserver' in window && cardsColumn) {
+          const observer = new ResizeObserver(scheduleLayout);
+          observer.observe(cardsColumn);
+          observer.observe(shell);
+        } else {
+          window.addEventListener('resize', scheduleLayout);
+        }
+
+        const clearActive = () => {
+          shell.classList.remove('is-hovering');
+          cards.forEach(card => card.classList.remove('is-active'));
+          tracks.forEach(track => track.classList.remove('is-active'));
+        };
+
+        const setActive = index => {
+          shell.classList.add('is-hovering');
+          cards.forEach((card, cardIndex) => card.classList.toggle('is-active', cardIndex === index));
+          tracks.forEach((track, trackIndex) => track.classList.toggle('is-active', trackIndex === index));
+        };
+
+        cards.forEach((card, index) => {
+          card.dataset.index = String(index);
+          if (tracks[index]) tracks[index].dataset.index = String(index);
+          card.addEventListener('pointerenter', () => setActive(index));
+          card.addEventListener('focusin', () => setActive(index));
+        });
+
+        shell.addEventListener('pointerleave', clearActive);
+        shell.addEventListener('focusout', event => {
+          if (!shell.contains(event.relatedTarget)) clearActive();
+        });
+      })();
+    </script>
+    <footer class="site-footer wrap">
+      <p>© 2026 Jason Chang</p>
+      <p>Software engineer · Taiwan</p>
+    </footer>
+  </body>
+</html>

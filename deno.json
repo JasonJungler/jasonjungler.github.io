@@ -1,0 +1,31 @@
+{
+  "tasks": {
+    "build": "deno task lume",
+    "serve": "deno task lume -s",
+    "check": "deno task lume --dry-run",
+    "lume": "deno run -P=lume lume/cli.ts"
+  },
+  "imports": {
+    "lume/": "https://cdn.jsdelivr.net/gh/lumeland/lume@3.3.0/",
+    "lume/jsx-runtime": "https://cdn.jsdelivr.net/gh/oscarotero/ssx@0.1.15/jsx-runtime.ts"
+  },
+  "lock": false,
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "lume",
+    "types": ["lume/types.ts"]
+  },
+  "unstable": ["temporal", "fmt-component"],
+  "permissions": {
+    "lume": {
+      "read": true,
+      "write": true,
+      "import": ["cdn.jsdelivr.net:443", "jsr.io:443", "deno.land:443", "esm.sh:443"],
+      "net": ["0.0.0.0", "jsr.io:443", "cdn.jsdelivr.net:443", "data.jsdelivr.net:443", "registry.npmjs.org:443"],
+      "env": true,
+      "run": true,
+      "ffi": true,
+      "sys": true
+    }
+  }
+}
