@@ -130,9 +130,22 @@ experience:
 <section class="intro wrap" aria-labelledby="intro-title">
   <p class="eyebrow">Software engineer · Taiwan</p>
   <h1 id="intro-title">Jason Chang</h1>
-  <p class="intro-title">Building dependable software for complex systems.</p>
+  <p class="intro-title">Your next-door 10× engineer—specializing in agent orchestration.</p>
   <div class="intro-grid">
-    <p class="summary">I’m a software engineer with a background in systems engineering, backend development, and full-stack applications. I enjoy understanding how things work, making them more reliable, and keeping the resulting experience clear for the people who use them.</p>
+    <dl class="profile-summary" aria-label="Profile summary">
+      <div class="profile-item">
+        <dt>Foundation</dt>
+        <dd>Systems engineering</dd>
+      </div>
+      <div class="profile-item">
+        <dt>Specialty</dt>
+        <dd>Backend &amp; full-stack development</dd>
+      </div>
+      <div class="profile-item profile-item--wide">
+        <dt>Approach</dt>
+        <dd>Understand deeply. Build reliably. Keep the experience clear.</dd>
+      </div>
+    </dl>
     <div class="social-links" aria-label="Social links">
       <a href="https://github.com/JasonJungler">GitHub <span aria-hidden="true">↗</span></a>
       <a href="https://www.linkedin.com/in/jason-chang-882aba82/">LinkedIn <span aria-hidden="true">↗</span></a>
