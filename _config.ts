@@ -6,6 +6,7 @@ const site = lume({
 });
 
 site.add("styles.css");
+site.add("favicon.svg");
 site.add("blog/feed.xml");
 
 export default site;
